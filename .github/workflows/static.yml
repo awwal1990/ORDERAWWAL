@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=100%">
+    <title>Vansales Order Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 100%;
+            padding: 10px;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 60px; /* Added for floating button space */
+        }
+        h1 {
+            color: #075e54;
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            color: #128c7e;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-toggle {
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .customer-info {
+            margin-bottom: 20px;
+        }
+        .customer-info input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        .submit-btn:hover {
+            background-color: #128C7E;
+        }
+        .item-with-qty {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-name {
+            flex-grow: 1;
+            padding-right: 10px;
+        }
+        .category-container {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .category-header {
+            background-color: #f0f0f0;
+            padding: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .category-content {
+            padding: 10px;
+            display: none;
+        }
+        .active .category-content {
+            display: block;
+        }
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .action-btn {
+            background-color: #128c7e;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .search-container {
+            margin-bottom: 15px;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .highlight {
+            background-color: #ffffcc;
+        }
+        .floating-back-top {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            background-color: #075e54;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>VANSALES ORDER FORM</h1>
+        
+        <div class="customer-info">
+            <h2>CUSTOMER INFORMATION</h2>
+            <input type="text" placeholder="Customer Name" id="customerName">
+            <input type="text" placeholder="Delivery Date (DD/MM/YYYY)" id="deliveryDate">
+        </div>
+
+        <div class="quick-actions">
+            <button class="action-btn" onclick="loadLastOrder()">Load Last Order</button>
+            <button class="action-btn" onclick="clearForm()">Clear Form</button>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search products...">
+        </div>
+        
+        <!-- BREADS CATEGORY -->
+        <div class="category-container" id="breadCategory">
+            <div class="category-header" onclick="toggleCategory('breadItems')">
+                <h2>BREADS <span class="category-toggle">+</span></h2>
+            </div>
+            <div class="category-content" id="breadItems">
+                <div class="item-with-qty">
+                    <span class="item-name">ARABIC BREAD LARGE</span>
+                    <input type="number" min="0" data-product="ARABIC BREAD LARGE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">ARABIC BREAD SMALL WHITE</span>
+                    <input type="number" min="0" data-product="ARABIC BREAD SMALL WHITE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">ARABIC BREAD LARGE BROWN</span>
+                    <input type="number" min="0" data-product="ARABIC BREAD LARGE BROWN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">ARABIC BREAD SMALL BROWN</span>
+                    <input type="number" min="0" data-product="ARABIC BREAD SMALL BROWN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SHAWARMA BREAD 1X25</span>
+                    <input type="number" min="0" data-product="SHAWARMA BREAD 1X25">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">FELAFIL BREAD 1X25</span>
+                    <input type="number" min="0" data-product="FELAFIL BREAD 1X25">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CHAPPATI</span>
+                    <input type="number" min="0" data-product="CHAPPATI">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED BREAD MEDIUM WHITE</span>
+                    <input type="number" min="0" data-product="SLICED BREAD MEDIUM WHITE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED BREAD MEDIUM BROWN</span>
+                    <input type="number" min="0" data-product="SLICED BREAD MEDIUM BROWN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED BREAD JUMBO WHITE</span>
+                    <input type="number" min="0" data-product="SLICED BREAD JUMBO WHITE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED BREAD JUMBO BROWN</span>
+                    <input type="number" min="0" data-product="SLICED BREAD JUMBO BROWN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED BREAD SMALL WHITE</span>
+                    <input type="number" min="0" data-product="SLICED BREAD SMALL WHITE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED BREAD SMALL BROWN</span>
+                    <input type="number" min="0" data-product="SLICED BREAD SMALL BROWN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">MILK BREAD SMALL</span>
+                    <input type="number" min="0" data-product="MILK BREAD SMALL">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">MILK BREAD BIG</span>
+                    <input type="number" min="0" data-product="MILK BREAD BIG">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">TASTY BREAD</span>
+                    <input type="number" min="0" data-product="TASTY BREAD">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">FINGER ROLL 1X4</span>
+                    <input type="number" min="0" data-product="FINGER ROLL 1X4">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">FINGER ROLL KUTTY 1X6</span>
+                    <input type="number" min="0" data-product="FINGER ROLL KUTTY 1X6">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">BURGER BUN 1X4</span>
+                    <input type="number" min="0" data-product="BURGER BUN 1X4">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">BURGER BUN 1X6</span>
+                    <input type="number" min="0" data-product="BURGER BUN 1X6">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">PAV BHAJI</span>
+                    <input type="number" min="0" data-product="PAV BHAJI">
+                </div>
+            </div>
+        </div>
+        
+        <!-- SNACKS CATEGORY -->
+        <div class="category-container" id="snacksCategory">
+            <div class="category-header" onclick="toggleCategory('snackItems')">
+                <h2>SNACKS <span class="category-toggle">+</span></h2>
+            </div>
+            <div class="category-content" id="snackItems">
+                <div class="item-with-qty">
+                    <span class="item-name">EGG PUFF</span>
+                    <input type="number" min="0" data-product="EGG PUFF">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CHICKEN PUFF</span>
+                    <input type="number" min="0" data-product="CHICKEN PUFF">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">VEG PUFF</span>
+                    <input type="number" min="0" data-product="VEG PUFF">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CUTLET</span>
+                    <input type="number" min="0" data-product="CUTLET">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CHICKEN ROLL FRY</span>
+                    <input type="number" min="0" data-product="CHICKEN ROLL FRY">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">IRANI VEG</span>
+                    <input type="number" min="0" data-product="IRANI VEG">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">IRANI TRIANGLE</span>
+                    <input type="number" min="0" data-product="IRANI TRIANGLE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">IRANI ROLL</span>
+                    <input type="number" min="0" data-product="IRANI ROLL">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SPANISH CHICKEN SANDWICH</span>
+                    <input type="number" min="0" data-product="SPANISH CHICKEN SANDWICH">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CHICKEN MAYONNISE ROLL</span>
+                    <input type="number" min="0" data-product="CHICKEN MAYONNISE ROLL">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">EGG SANDWICH</span>
+                    <input type="number" min="0" data-product="EGG SANDWICH">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SAUSAGE ROLL</span>
+                    <input type="number" min="0" data-product="SAUSAGE ROLL">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">BAJA (CREAM) BUN</span>
+                    <input type="number" min="0" data-product="BAJA (CREAM) BUN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CROISSANT CHEESE</span>
+                    <input type="number" min="0" data-product="CROISSANT CHEESE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CROISSANT ZAATAR</span>
+                    <input type="number" min="0" data-product="CROISSANT ZAATAR">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SULTHANA</span>
+                    <input type="number" min="0" data-product="SULTHANA">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">BANANA PUFF</span>
+                    <input type="number" min="0" data-product="BANANA PUFF">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">TAMER BUN</span>
+                    <input type="number" min="0" data-product="TAMER BUN">
+                </div>
+            </div>
+        </div>
+        
+        <!-- BISCUITS & CAKES CATEGORY -->
+        <div class="category-container" id="biscuitsCategory">
+            <div class="category-header" onclick="toggleCategory('biscuitItems')">
+                <h2>BISCUITS & CAKES <span class="category-toggle">+</span></h2>
+            </div>
+            <div class="category-content" id="biscuitItems">
+                <div class="item-with-qty">
+                    <span class="item-name">CHICKEN ZINGER BURGER</span>
+                    <input type="number" min="0" data-product="CHICKEN ZINGER BURGER">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">MINI CROISSANT 1X5</span>
+                    <input type="number" min="0" data-product="MINI CROISSANT 1X5">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SAMOSA</span>
+                    <input type="number" min="0" data-product="SAMOSA">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SWEET BUN</span>
+                    <input type="number" min="0" data-product="SWEET BUN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SLICED CAKE PCS</span>
+                    <input type="number" min="0" data-product="SLICED CAKE PCS">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">MUFFINS PCS</span>
+                    <input type="number" min="0" data-product="MUFFINS PCS">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CRISPY ROLL</span>
+                    <input type="number" min="0" data-product="CRISPY ROLL">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">TABOOK BISCUIT</span>
+                    <input type="number" min="0" data-product="TABOOK BISCUIT">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">MOBILE BISCUIT</span>
+                    <input type="number" min="0" data-product="MOBILE BISCUIT">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">FLOWER BISCUIT 1X6</span>
+                    <input type="number" min="0" data-product="FLOWER BISCUIT 1X6">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SUGAR BISCUIT</span>
+                    <input type="number" min="0" data-product="SUGAR BISCUIT">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">PEANUT BISCUIT</span>
+                    <input type="number" min="0" data-product="PEANUT BISCUIT">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SQUARE BISCUIT</span>
+                    <input type="number" min="0" data-product="SQUARE BISCUIT">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CREAM BUN -I PHONE</span>
+                    <input type="number" min="0" data-product="CREAM BUN -I PHONE">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">BUTTER BUN</span>
+                    <input type="number" min="0" data-product="BUTTER BUN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">CUSTARD BUN</span>
+                    <input type="number" min="0" data-product="CUSTARD BUN">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">BELT</span>
+                    <input type="number" min="0" data-product="BELT">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">SULTHANA BIG</span>
+                    <input type="number" min="0" data-product="SULTHANA BIG">
+                </div>
+            </div>
+        </div>
+        
+        <!-- OTHERS CATEGORY -->
+        <div class="category-container" id="othersCategory">
+            <div class="category-header" onclick="toggleCategory('otherItems')">
+                <h2>OTHERS <span class="category-toggle">+</span></h2>
+            </div>
+            <div class="category-content" id="otherItems">
+                <div class="item-with-qty">
+                    <span class="item-name">PIZZA SMALL VEG</span>
+                    <input type="number" min="0" data-product="PIZZA SMALL VEG">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">PIZZA LARGE VEG</span>
+                    <input type="number" min="0" data-product="PIZZA LARGE VEG">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">WHITE LADOO 1X12</span>
+                    <input type="number" min="0" data-product="WHITE LADOO 1X12">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">GULAB JAM 1X6</span>
+                    <input type="number" min="0" data-product="GULAB JAM 1X6">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">GULAB JAM CREAM 1X12</span>
+                    <input type="number" min="0" data-product="GULAB JAM CREAM 1X12">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">LADOO 1X25</span>
+                    <input type="number" min="0" data-product="LADOO 1X25">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">WHITE BURF 1X12</span>
+                    <input type="number" min="0" data-product="WHITE BURF 1X12">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">WHITE BURF 1X6</span>
+                    <input type="number" min="0" data-product="WHITE BURF 1X6">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">GUJIYA 1X6</span>
+                    <input type="number" min="0" data-product="GUJIYA 1X6">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">PATEESA</span>
+                    <input type="number" min="0" data-product="PATEESA">
+                </div>
+                <div class="item-with-qty">
+                    <span class="item-name">HALWA</span>
+                    <input type="number" min="0" data-product="HALWA">
+                </div>
+            </div>
+        </div>
+        
+        <a href="#" class="floating-back-top">↑</a>
+        <button class="submit-btn" onclick="generateOrder()">SUBMIT ORDER</button>
+    </div>
+    
+    <script>
+        // Add event listeners when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load any saved customer info
+            const savedCustomerName = localStorage.getItem('customerName');
+            if (savedCustomerName) {
+                document.getElementById('customerName').value = savedCustomerName;
+            }
+            
+            // Set default delivery date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dd = String(tomorrow.getDate()).padStart(2, '0');
+            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const yyyy = tomorrow.getFullYear();
+            const tomorrowFormatted = dd + '/' + mm + '/' + yyyy;
+            
+            const savedDeliveryDate = localStorage.getItem('deliveryDate') || tomorrowFormatted;
+            document.getElementById('deliveryDate').value = savedDeliveryDate;
+            
+            // Add search functionality
+            document.getElementById('searchInput').addEventListener('input', searchProducts);
+            
+            // Auto-save inputs as they change
+            const allInputs = document.querySelectorAll('input');
+            allInputs.forEach(input => {
+                input.addEventListener('change', saveFormState);
+            });
+        });
+        
+        // Toggle category visibility
+        function toggleCategory(categoryId) {
+            const categoryDiv = document.getElementById(categoryId);
+            const parentContainer = categoryDiv.parentElement;
+            parentContainer.classList.toggle('active');
+            
+            // Update toggle indicator
+            const toggleSpan = parentContainer.querySelector('.category-toggle');
+            if (parentContainer.classList.contains('active')) {
+                toggleSpan.textContent = '-';
+            } else {
+                toggleSpan.textContent = '+';
+            }
+        }
+        
+        // Save form state to localStorage
+        function saveFormState() {
+            // Save customer info
+            const customerName = document.getElementById('customerName').value;
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            
+            localStorage.setItem('customerName', customerName);
+            localStorage.setItem('deliveryDate', deliveryDate);
+            
+            // Save product quantities
+            const quantityInputs = document.querySelectorAll('input[type="number"]');
+            const orderItems = {};
+            
+            quantityInputs.forEach(input => {
+                const productName = input.dataset.product;
+                const quantity = input.value;
+                if (quantity && quantity > 0) {
+                    orderItems[productName] = quantity;
+                }
+            });
+            
+            localStorage.setItem('lastOrder', JSON.stringify(orderItems));
+        }
+        
+        // Load last order
+        function loadLastOrder() {
+            const lastOrder = JSON.parse(localStorage.getItem('lastOrder') || '{}');
+            
+            // Clear all current quantities
+            const quantityInputs = document.querySelectorAll('input[type="number"]');
+            quantityInputs.forEach(input => {
+                input.value = '';
+            });
+            
+            // Fill in saved quantities
+            for (const [product, quantity] of Object.entries(lastOrder)) {
+                const input = document.querySelector(`input[data-product="${product}"]`);
+                if (input) {
+                    input.value = quantity;
+                }
+            }
+            
+            alert('Last order loaded successfully!');
+        }
+        
+        // Clear the form
+        function clearForm() {
+            const quantityInputs = document.querySelectorAll('input[type="number"]');
+            quantityInputs.forEach(input => {
+                input.value = '';
+            });
+            
+            // Keep customer name but reset delivery date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dd = String(tomorrow.getDate()).padStart(2, '0');
+            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const yyyy = tomorrow.getFullYear();
+            document.getElementById('deliveryDate').value = dd + '/' + mm + '/' + yyyy;
+            
+            alert('Form cleared!');
+        }
+        
+        // Search products
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const itemContainers = document.querySelectorAll('.item-with-qty');
+            
+            if (searchTerm === '') {
+                // Reset all highlights and category visibility
+                itemContainers.forEach(container => {
+                    container.style.display = 'flex';
+                    const nameElement = container.querySelector('.item-name');
+                    nameElement.innerHTML = nameElement.textContent;
+                });
+                
+                // Collapse all categories
+                document.querySelectorAll('.category-container').forEach(category => {
+                    category.classList.remove('active');
+                    const toggleSpan = category.querySelector('.category-toggle');
+                    toggleSpan.textContent = '+';
+                });
+                
+                return;
+            }
+            
+            let foundItems = false;
+            
+            // Search through all items
+            itemContainers.forEach(container => {
+                const nameElement = container.querySelector('.item-name');
+                const itemName = nameElement.textContent.toLowerCase();
+                
+                if (itemName.includes(searchTerm)) {
+                    // Show the item and highlight the text
+                    container.style.display = 'flex';
+                    const highlightedText = nameElement.textContent.replace(
+                        new RegExp(searchTerm, 'gi'),
+                        match => `<span class="highlight">${match}</span>`
+                    );
+                    nameElement.innerHTML = highlightedText;
+                    
+                    // Expand the category
+                    const categoryContent = container.closest('.category-content');
+                    const categoryContainer = categoryContent.parentElement;
+                    categoryContainer.classList.add('active');
+                    
+                    // Update toggle indicator
+                    const toggleSpan = categoryContainer.querySelector('.category-toggle');
+                    toggleSpan.textContent = '-';
+                    
+                    foundItems = true;
+                } else {
+                    // Hide the item
+                    container.style.display = 'none';
+                    nameElement.innerHTML = nameElement.textContent; // Reset any previous highlighting
+                }
+            });
+            
+            if (!foundItems) {
+                // If no items found, show all categories collapsed
+                document.querySelectorAll('.category-container').forEach(category => {
+                    category.classList.remove('active');
+                    const toggleSpan = category.querySelector('.category-toggle');
+                    toggleSpan.textContent = '+';
+                });
+            }
+        }
+        
+        // Generate and send the order
+        <script>
+function generateOrder() {
+    saveFormState();
+
+    const customerName = document.getElementById('customerName').value || 'Not provided';
+    const deliveryDate = document.getElementById('deliveryDate').value || 'Not provided';
+
+    // Collect ordered items
+    const orderedItems = [];
+    const quantityInputs = document.querySelectorAll('input[type="number"]');
+    quantityInputs.forEach(input => {
+        const quantity = parseInt(input.value);
+        if (quantity > 0) {
+            const itemName = input.dataset.product;
+            orderedItems.push({ name: itemName, qty: quantity });
+        }
+    });
+
+    if (orderedItems.length === 0) {
+        alert("Please add at least one item to your order.");
+        return;
+    }
+
+    // Prepare data for Google Sheet
+    const orderData = {
+        customerName: customerName,
+        deliveryDate: deliveryDate,
+        orderedItems: orderedItems
+    };
+
+    // SEND TO GOOGLE APPS SCRIPT WEBHOOK
+    fetch('https://script.google.com/macros/s/AKfycbxMCdnYRxEefjcm-ZiumHeW1BQ4NtLJ7WdEpMS9cBAVdwQ7puRH0mUhyECyiJu6tUA/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+    });
+
+    // Optionally, you can keep the WhatsApp logic here as well
+    // ... WhatsApp code as before ...
+    // Or, show a confirmation:
+    alert('Order submitted successfully!');
+}
+</script>);
+        }
+    </script>
+</body>
+</html># Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
